@@ -1,3 +1,26 @@
+// Package requiredfield implements a linter
+// that checks for required fields during struct initialization.
+//
+// Fields can be marked as required by adding a comment in the form
+// "// required" next to the field, optionally followed by a description.
+// For example:
+//
+//	type T struct {
+//		A string // required
+//		B int    // required: must be positive
+//		C bool   // required because reasons
+//	}
+//
+// The analyzer will report an error when an instance of the struct is
+// initialized without setting one or more of the required fields explicitly.
+// For example:
+//
+//	T{A: "foo"} // error: missing required fields: B, C
+//
+// The explicit value can be the zero value of the field type,
+// but it must be set explicitly.
+//
+//	T{A: "foo", B: 0, C: false}
 package requiredfield
 
 import (
@@ -5,6 +28,7 @@ import (
 	"go/token"
 	"go/types"
 	"strings"
+	"unicode"
 
 	"golang.org/x/exp/slices"
 	"golang.org/x/tools/go/analysis"
@@ -236,6 +260,24 @@ func (f *isRequiredField) String() string {
 	return "required"
 }
 
+const _required = "// required"
+
 func isRequiredComment(c *ast.Comment) bool {
-	return c.Text == "// required" || strings.HasPrefix(c.Text, "// required ")
+	if c.Text == _required {
+		return true
+	}
+
+	if !strings.HasPrefix(c.Text, _required) {
+		return false
+	}
+
+	for _, r := range c.Text[len(_required):] {
+		return !unicode.IsLetter(r) && !unicode.IsDigit(r) && r != '_'
+	}
+
+	// Impossible:
+	// If the comment is not "// required", but it starts with that,
+	// the loop above will always return before we get here.
+	// This is just to make the compiler happy.
+	return false
 }
