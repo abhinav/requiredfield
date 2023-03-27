@@ -1,5 +1,15 @@
 # requiredfield
 
+- [Introduction](#introduction)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Overview](#overview)
+  - [Syntax](#syntax)
+  - [Behavior](#behavior)
+- [FAQ](#faq)
+
+## Introduction
+
 requiredfield is a linter for Go that verifies that
 required fields of a struct are filled when it is initialized.
 Whether a field is required is specified with a comment.
@@ -69,7 +79,7 @@ w := BufWriter{Buffer: b}
 // ERROR: missing required fields: W
 ```
 
-## Syntax
+### Syntax
 
 Fields are marked as required by adding a comment
 in one of the following forms next to them:
@@ -94,7 +104,7 @@ type User struct {
 The description is for the benefit of other readers only.
 requiredfield will ignore it.
 
-## Behavior
+### Behavior
 
 Any time a struct is initialized in the form `T{..}`,
 requiredfield will ensure that all its required fields are set explicitly.
@@ -144,7 +154,3 @@ Author ID `required:"true"`
 
 Author ID // required
 ```
-
-## License
-
-This software is made available under the MIT license.
