@@ -31,6 +31,8 @@ type RequiredExported struct { // want RequiredExported:"required<A, B>"
 	B int    // required
 }
 
+type aliasedStruct = RequiredExported
+
 func x() {
 	fmt.Println(AllOptional{})
 
@@ -62,4 +64,7 @@ func x() {
 		{B: 1}:         "baz", // want "missing required fields: A"
 		{}:             "qux", // want "missing required fields: A, B"
 	})
+
+	// Aliased.
+	fmt.Println(aliasedStruct{}) // want "missing required fields: A, B"
 }

@@ -34,6 +34,8 @@ func _() {
 	fmt.Println(a.OneRequired{B: 1})
 	fmt.Println(a.RequiredExported{A: "", B: 1})
 
+	fmt.Println("pointer:", &a.RequiredExported{}) // want "missing required fields: A, B"
+
 	// Inside another struct:
 	fmt.Println(MyStruct{ // want "missing required fields: MyOwn"
 		Thing: a.RequiredExported{}, // want "missing required fields: A, B"
