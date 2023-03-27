@@ -20,6 +20,7 @@ var Analyzer = &analysis.Analyzer{
 		inspect.Analyzer,
 	},
 	FactTypes: []analysis.Fact{
+		new(isRequiredField),
 		new(hasRequiredFields),
 	},
 }
@@ -35,7 +36,6 @@ func run(pass *analysis.Pass) (interface{}, error) {
 	f.Find(inspect)
 
 	e := enforcer{
-		Fset:             pass.Fset,
 		Info:             pass.TypesInfo,
 		ImportObjectFact: pass.ImportObjectFact,
 		Reportf:          pass.Reportf,
@@ -46,7 +46,6 @@ func run(pass *analysis.Pass) (interface{}, error) {
 }
 
 type enforcer struct {
-	Fset *token.FileSet
 	Info *types.Info
 
 	ImportObjectFact func(obj types.Object, fact analysis.Fact) bool
@@ -61,29 +60,40 @@ func (e *enforcer) Enforce(inspect *inspector.Inspector) {
 	inspect.Preorder(_enforceNodeFilter, func(n ast.Node) {
 		lit := n.(*ast.CompositeLit)
 		typ := e.Info.TypeOf(lit)
-		var obj types.Object
+
+		if ptr, ok := typ.(*types.Pointer); ok {
+			typ = ptr.Elem()
+		}
+
+		var unset map[string]struct{}
 		switch typ := typ.(type) {
 		case *types.Named:
-			// struct
-			obj = typ.Obj()
-		case *types.Pointer:
-			// pointer to struct
-			if named, ok := typ.Elem().(*types.Named); ok {
-				obj = named.Obj()
+			// named struct (probably)
+			var reqFields hasRequiredFields
+			if !e.ImportObjectFact(typ.Obj(), &reqFields) {
+				return
+			}
+
+			unset = make(map[string]struct{}, len(reqFields.List))
+			for _, name := range reqFields.List {
+				unset[name] = struct{}{}
+			}
+		case *types.Struct:
+			// anonymous struct
+			var fact isRequiredField
+			for i := 0; i < typ.NumFields(); i++ {
+				f := typ.Field(i)
+				if e.ImportObjectFact(f, &fact) {
+					if unset == nil {
+						unset = make(map[string]struct{})
+					}
+					unset[f.Name()] = struct{}{}
+				}
 			}
 		}
-		if obj == nil {
-			return
-		}
 
-		var reqFields hasRequiredFields
-		if !e.ImportObjectFact(obj, &reqFields) || len(reqFields.List) == 0 {
+		if len(unset) == 0 {
 			return
-		}
-
-		unset := make(map[string]struct{})
-		for _, f := range reqFields.List {
-			unset[f] = struct{}{}
 		}
 
 		// Check that all required fields are set.
@@ -121,7 +131,6 @@ type finder struct {
 }
 
 var _finderNodeFilter = []ast.Node{
-	new(ast.GenDecl),
 	new(ast.TypeSpec),
 	new(ast.StructType),
 }
@@ -130,10 +139,6 @@ func (f *finder) Find(inspect *inspector.Inspector) {
 	var curType *ast.Ident
 	inspect.Nodes(_finderNodeFilter, func(n ast.Node, push bool) bool {
 		switch n := n.(type) {
-		case *ast.GenDecl:
-			// Only look at type declarations.
-			return n.Tok == token.TYPE
-
 		case *ast.TypeSpec:
 			if push {
 				curType = n.Name
@@ -151,9 +156,15 @@ func (f *finder) Find(inspect *inspector.Inspector) {
 	})
 }
 
+// structType inspects the provided struct definition.
+// If it has any required fields, it attaches a fact to the type.
+// name may be nil if the struct is anonymous.
 func (f *finder) structType(name *ast.Ident, t *ast.StructType) {
-	var requiredFields []string
-	for _, field := range t.Fields.List {
+	var (
+		requiredIndexes []int
+		requiredFields  []string
+	)
+	for i, field := range t.Fields.List {
 		if field.Comment == nil {
 			continue
 		}
@@ -161,6 +172,7 @@ func (f *finder) structType(name *ast.Ident, t *ast.StructType) {
 			continue
 		}
 
+		requiredIndexes = append(requiredIndexes, i)
 		for _, n := range field.Names {
 			requiredFields = append(requiredFields, n.Name)
 		}
@@ -171,22 +183,36 @@ func (f *finder) structType(name *ast.Ident, t *ast.StructType) {
 	}
 	slices.Sort(requiredFields)
 
-	// Attach the fact to the type.
-	obj, ok := f.Info.Defs[name]
-	if !ok {
-		f.Reportf(name.Pos(), "could not find object for %v", name)
-		return
-	}
+	if name != nil {
+		// Named struct.
+		// Attach the fact to the type.
+		obj, ok := f.Info.Defs[name]
+		if !ok {
+			f.Reportf(name.Pos(), "could not find object for %v", name)
+			return
+		}
+		f.ExportObjectFact(obj, &hasRequiredFields{
+			List: requiredFields,
+		})
+	} else {
+		// Anonymous struct.
+		// Attach to individual fields.
+		st, ok := f.Info.TypeOf(t).(*types.Struct)
+		if !ok {
+			return
+		}
 
-	f.ExportObjectFact(obj, &hasRequiredFields{
-		List: requiredFields,
-	})
+		for _, i := range requiredIndexes {
+			f.ExportObjectFact(st.Field(i), &isRequiredField{})
+		}
+	}
 }
 
-// hasRequiredFields is a Fact attached to structs.
-// These fields must be explicitly set during initialization of the struct.
+// hasRequiredFields is a Fact attached to structs
+// listing its required fields.
 type hasRequiredFields struct {
-	// List is a list of field names that are marked as required.
+	// List is a list of field names
+	// in the struct that are marked required.
 	List []string
 }
 
@@ -198,6 +224,18 @@ func (f *hasRequiredFields) String() string {
 	return "required<" + strings.Join(f.List, ", ") + ">"
 }
 
+// isRequiredField is a Fact attached to fields of anonymous structs
+// that are marked required.
+type isRequiredField struct{}
+
+var _ analysis.Fact = (*isRequiredField)(nil)
+
+func (*isRequiredField) AFact() {}
+
+func (f *isRequiredField) String() string {
+	return "required"
+}
+
 func isRequiredComment(c *ast.Comment) bool {
-	return c.Text == "// required"
+	return c.Text == "// required" || strings.HasPrefix(c.Text, "// required ")
 }
