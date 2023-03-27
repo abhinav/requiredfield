@@ -36,6 +36,9 @@ import (
 	"golang.org/x/tools/go/ast/inspector"
 )
 
+// Analyzer implements the requiredfield linter.
+//
+// See package documentation for details.
 var Analyzer = &analysis.Analyzer{
 	Name: "requiredfield",
 	Doc:  "check for required fields during struct initialization",
