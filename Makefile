@@ -34,7 +34,7 @@ cover: $(GO_FILES)
 	go tool cover -html=cover.out -o cover.html
 
 .PHONY: lint
-lint: gofmt revive staticcheck gomodtidy readmecheck
+lint: gofmt revive staticcheck gomodtidy readmecheck requiredfield
 
 .PHONY: gofmt
 gofmt:
@@ -43,6 +43,10 @@ gofmt:
 	@[ ! -s "$(FMT_LOG)" ] || \
 		(echo "gofmt failed. Please reformat the following files:" | \
 		cat - $(FMT_LOG) && false)
+
+.PHONY: requiredfield
+requiredfield: $(REQUIREDFIELD)
+	go vet -vettool=$(REQUIREDFIELD) ./...
 
 .PHONY: revive
 revive: $(REVIVE)

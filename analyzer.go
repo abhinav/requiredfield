@@ -73,10 +73,10 @@ func run(pass *analysis.Pass) (interface{}, error) {
 }
 
 type enforcer struct {
-	Info *types.Info
+	Info *types.Info // required
 
-	ImportObjectFact func(obj types.Object, fact analysis.Fact) bool
-	Reportf          func(pos token.Pos, msg string, args ...interface{})
+	ImportObjectFact func(obj types.Object, fact analysis.Fact) bool      // required
+	Reportf          func(pos token.Pos, msg string, args ...interface{}) // required
 }
 
 var _enforceNodeFilter = []ast.Node{
@@ -151,10 +151,10 @@ func (e *enforcer) Enforce(inspect *inspector.Inspector) {
 }
 
 type finder struct {
-	Info *types.Info
+	Info *types.Info // required
 
-	ExportObjectFact func(obj types.Object, fact analysis.Fact)
-	Reportf          func(pos token.Pos, msg string, args ...interface{})
+	ExportObjectFact func(obj types.Object, fact analysis.Fact)           // required
+	Reportf          func(pos token.Pos, msg string, args ...interface{}) // required
 }
 
 var _finderNodeFilter = []ast.Node{
