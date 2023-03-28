@@ -8,6 +8,10 @@ import (
 type Foo struct {
 	a.OneRequired
 	a.RequiredExported
+
+	Bar struct {
+		X int // required // want X:"required"
+	}
 }
 
 func _() {
@@ -18,4 +22,14 @@ func _() {
 		},
 	}
 	fmt.Println(f)
+}
+
+type Bar map[string]struct {
+	X int // required // want X:"required"
+}
+
+func _() {
+	fmt.Println(Bar{
+		"foo": {}, // want "missing required fields: X"
+	})
 }

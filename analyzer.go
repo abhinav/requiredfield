@@ -163,23 +163,35 @@ var _finderNodeFilter = []ast.Node{
 }
 
 func (f *finder) Find(inspect *inspector.Inspector) {
-	var curType *ast.Ident
-	inspect.Nodes(_finderNodeFilter, func(n ast.Node, push bool) bool {
+	seen := make(map[*ast.StructType]struct{})
+
+	inspect.Preorder(_finderNodeFilter, func(n ast.Node) {
+		var (
+			name *ast.Ident
+			st   *ast.StructType
+		)
+
 		switch n := n.(type) {
 		case *ast.TypeSpec:
-			if push {
-				curType = n.Name
-			} else {
-				curType = nil
+			if t, ok := n.Type.(*ast.StructType); ok {
+				name = n.Name
+				st = t
 			}
-
 		case *ast.StructType:
-			if push {
-				f.structType(curType, n)
-			}
+			st = n
 		}
 
-		return true
+		// If the type spec is not a struct, or if we've already seen it,
+		// we can skip it.
+		if st == nil {
+			return
+		}
+		if _, ok := seen[st]; ok {
+			return
+		}
+
+		seen[st] = struct{}{}
+		f.structType(name, st)
 	})
 }
 
