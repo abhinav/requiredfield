@@ -203,6 +203,7 @@ func (f *finder) structType(name *ast.Ident, t *ast.StructType) {
 		requiredIndexes []int
 		requiredFields  []string
 	)
+	st := f.Info.TypeOf(t).(*types.Struct)
 	for i, field := range t.Fields.List {
 		if field.Comment == nil {
 			continue
@@ -212,8 +213,14 @@ func (f *finder) structType(name *ast.Ident, t *ast.StructType) {
 		}
 
 		requiredIndexes = append(requiredIndexes, i)
-		for _, n := range field.Names {
-			requiredFields = append(requiredFields, n.Name)
+		if field.Names == nil {
+			// Embedded fields don't have field.Names.
+			name := st.Field(i).Name()
+			requiredFields = append(requiredFields, name)
+		} else {
+			for _, n := range field.Names {
+				requiredFields = append(requiredFields, n.Name)
+			}
 		}
 	}
 
