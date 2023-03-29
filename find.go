@@ -13,7 +13,8 @@ import (
 )
 
 type finder struct {
-	Info *types.Info // required
+	Fset *token.FileSet // required
+	Info *types.Info    // required
 
 	ExportObjectFact func(obj types.Object, fact analysis.Fact)           // required
 	Reportf          func(pos token.Pos, msg string, args ...interface{}) // required
@@ -61,6 +62,8 @@ func (f *finder) Find(inspect *inspector.Inspector) {
 // If it has any required fields, it attaches a fact to the type.
 // name may be nil if the struct is anonymous.
 func (f *finder) structType(name *ast.Ident, t *ast.StructType) {
+	file := f.Fset.File(t.Pos())
+
 	var (
 		requiredIndexes []int
 		requiredFields  []string
@@ -70,7 +73,17 @@ func (f *finder) structType(name *ast.Ident, t *ast.StructType) {
 		if field.Comment == nil {
 			continue
 		}
-		if !slices.ContainsFunc(field.Comment.List, isRequiredComment) {
+
+		var found bool
+		fieldLine := file.Line(field.End())
+		for _, c := range field.Comment.List {
+			if file.Line(c.Pos()) == fieldLine && isRequiredComment(c) {
+				found = true
+				break
+			}
+		}
+
+		if !found {
 			continue
 		}
 

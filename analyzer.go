@@ -49,6 +49,7 @@ func run(pass *analysis.Pass) (interface{}, error) {
 	inspect := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
 
 	f := finder{
+		Fset:             pass.Fset,
 		Info:             pass.TypesInfo,
 		ExportObjectFact: pass.ExportObjectFact,
 		Reportf:          pass.Reportf,

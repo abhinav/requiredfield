@@ -104,6 +104,32 @@ type User struct {
 The description is for the benefit of other readers only.
 requiredfield will ignore it.
 
+#### Positioning
+
+The `// required` comment must be on the line where the field is defined.
+
+```
+GOOD                         | BAD
+-----------------------------+-------------------
+type User struct {           | type User struct {
+    Name string // required  |     // required
+}                            |     Name string
+                             | }
+```
+
+If the field definition is spread across multiple lines,
+the comment must be on the last of these.
+For example,
+
+```go
+type Watcher struct {
+    Callback func(
+        ctx context.Context,
+        req *Request,
+    ) // required
+}
+```
+
 ### Behavior
 
 Any time a struct is initialized in the form `T{..}`,
