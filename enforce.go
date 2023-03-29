@@ -4,9 +4,9 @@ import (
 	"go/ast"
 	"go/token"
 	"go/types"
+	"sort"
 	"strings"
 
-	"golang.org/x/exp/slices"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/ast/inspector"
 )
@@ -83,7 +83,7 @@ func (e *enforcer) Enforce(inspect *inspector.Inspector) {
 		for f := range unset {
 			missing = append(missing, f)
 		}
-		slices.Sort(missing)
+		sort.Strings(missing)
 
 		e.Reportf(lit.Lbrace, "missing required fields: %s", strings.Join(missing, ", "))
 	})

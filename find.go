@@ -4,10 +4,10 @@ import (
 	"go/ast"
 	"go/token"
 	"go/types"
+	"sort"
 	"strings"
 	"unicode"
 
-	"golang.org/x/exp/slices"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/ast/inspector"
 )
@@ -102,7 +102,7 @@ func (f *finder) structType(name *ast.Ident, t *ast.StructType) {
 	if len(requiredFields) == 0 {
 		return
 	}
-	slices.Sort(requiredFields)
+	sort.Strings(requiredFields)
 
 	if name != nil {
 		// Named struct.
