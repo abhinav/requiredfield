@@ -10,6 +10,10 @@
 
 ## Introduction
 
+[![Go Reference](https://pkg.go.dev/badge/go.abhg.dev/requiredfield.svg)](https://pkg.go.dev/go.abhg.dev/requiredfield)
+[![CI](https://github.com/abhinav/requiredfield/actions/workflows/ci.yml/badge.svg)](https://github.com/abhinav/requiredfield/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/github/abhinav/requiredfield/branch/main/graph/badge.svg?token=8UW2S4GBTF)](https://codecov.io/github/abhinav/requiredfield)
+
 requiredfield is a linter for Go that verifies that
 required fields of a struct are filled when it is initialized.
 Whether a field is required is specified with a comment.
