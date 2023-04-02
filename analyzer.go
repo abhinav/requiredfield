@@ -25,6 +25,7 @@ package requiredfield
 
 import (
 	"golang.org/x/tools/go/analysis"
+	"golang.org/x/tools/go/analysis/passes/buildssa"
 	"golang.org/x/tools/go/analysis/passes/inspect"
 	"golang.org/x/tools/go/ast/inspector"
 )
@@ -38,12 +39,20 @@ var Analyzer = &analysis.Analyzer{
 	Run:  run,
 	Requires: []*analysis.Analyzer{
 		inspect.Analyzer,
+		buildssa.Analyzer,
 	},
 	FactTypes: []analysis.Fact{
 		new(isRequiredField),
 		new(hasRequiredFields),
 	},
 }
+
+// TODO: break apart into separate analyzers:
+//
+// - one that finds required fields and needs inspect
+// - one that enforces required fields and needs buildssa
+//
+// This will let buildssa run in parallel with find.
 
 func run(pass *analysis.Pass) (interface{}, error) {
 	inspect := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
@@ -56,12 +65,14 @@ func run(pass *analysis.Pass) (interface{}, error) {
 	}
 	f.Find(inspect)
 
+	ssa := pass.ResultOf[buildssa.Analyzer].(*buildssa.SSA)
 	e := enforcer{
+		Fset:             pass.Fset,
 		Info:             pass.TypesInfo,
 		ImportObjectFact: pass.ImportObjectFact,
 		Reportf:          pass.Reportf,
 	}
-	e.Enforce(inspect)
+	e.Enforce2(inspect, ssa.SrcFuncs)
 
 	return nil, nil
 }

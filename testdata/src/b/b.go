@@ -19,7 +19,7 @@ type User struct { // want User:"required<ID>"
 	DisplayName string // optional
 }
 
-func _() {
+func _1() {
 	fmt.Println(a.AllOptional{})
 
 	// Missing all fields:

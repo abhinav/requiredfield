@@ -14,7 +14,7 @@ type Foo struct { // want Foo:"required<OneRequired>"
 	}
 }
 
-func _() {
+func _1() {
 	fmt.Println(Foo{}) // want "missing required fields: OneRequired"
 
 	fmt.Println(Foo{
@@ -29,7 +29,7 @@ type Bar map[string]struct {
 	X int // required // want X:"required"
 }
 
-func _() {
+func _2() {
 	fmt.Println(Bar{
 		"foo": {}, // want "missing required fields: X"
 	})
@@ -37,7 +37,7 @@ func _() {
 
 type Alias = a.OneRequired
 
-func _() {
+func _3() {
 	fmt.Println(Alias{}) // want "missing required fields: B"
 }
 
@@ -45,7 +45,7 @@ type embedsAlias struct { // want embedsAlias:"required<Alias>"
 	Alias // required
 }
 
-func _() {
+func _4() {
 	fmt.Println(embedsAlias{}) // want "missing required fields: Alias"
 
 	fmt.Println(embedsAlias{
@@ -61,7 +61,7 @@ type embedsAliasPtr struct { // want embedsAliasPtr:"required<Alias>"
 	*Alias // required
 }
 
-func _() {
+func _5() {
 	fmt.Println(embedsPtr{})      // want "missing required fields: OneRequired"
 	fmt.Println(embedsAliasPtr{}) // want "missing required fields: Alias"
 }

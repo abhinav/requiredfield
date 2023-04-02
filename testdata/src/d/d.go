@@ -18,7 +18,7 @@ type Foo struct { // want Foo:"required<X, Z>"
 	Z int `json:"z"` // required: has field tag
 }
 
-func _() {
+func _1() {
 	fmt.Println(Foo{}) // want "missing required fields: X, Z"
 }
 
@@ -29,6 +29,6 @@ type Handler struct { // want Handler:"required<Callback>"
 	) // required
 }
 
-func _() {
+func _2() {
 	fmt.Println(Handler{}) // want "missing required fields: Callback"
 }
