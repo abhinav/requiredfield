@@ -25,4 +25,4 @@ w := BufWriter{Buffer: b}
 ```
 
 To read more about the motivation for this linter,
-see [Motivation](MOTIVATION.md).
+see [Motivation](motivation.md).

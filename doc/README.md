@@ -7,3 +7,5 @@
    - [Syntax](syntax.md)
    - [Behavior](behavior.md)
 - [FAQ](faq.md)
+- [Motivation](motivation.md)
+- [License](license.md)

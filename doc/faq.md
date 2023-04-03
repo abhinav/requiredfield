@@ -24,5 +24,3 @@ Author ID `required:"true"`
 
 Author ID // required
 ```
-
-
