@@ -36,3 +36,20 @@ jobs:
 
     - name: Upload coverage
       uses: codecov/codecov-action@v3
+
+  docs:
+    name: Update documentation
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v3
+    - uses: abhinav/stitchmd-action@v1
+      with:
+        mode: ${{ github.event_name == 'pull_request' && 'write' || 'check' }}
+        summary: doc/README.md
+        output: README.md
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        file_pattern: doc/README.md
+        commit_message: 'Auto-update README.md with stitchmd'
