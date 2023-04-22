@@ -5,9 +5,8 @@ REQUIREDFIELD = $(BIN)/requiredfield
 
 REVIVE = $(BIN)/revive
 STATICCHECK = $(BIN)/staticcheck
-STITCHMD = $(BIN)/stitchmd
 
-TOOLS = $(REVIVE) $(STATICCHECK) $(STITCHMD)
+TOOLS = $(REVIVE) $(STATICCHECK)
 
 PROJECT_ROOT = $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 export GOBIN = $(PROJECT_ROOT)/$(BIN)
@@ -34,7 +33,7 @@ cover: $(GO_FILES)
 	go tool cover -html=cover.out -o cover.html
 
 .PHONY: lint
-lint: gofmt revive staticcheck gomodtidy readmecheck requiredfield
+lint: gofmt revive staticcheck gomodtidy requiredfield
 
 .PHONY: gofmt
 gofmt:
@@ -71,20 +70,3 @@ gomodtidy: go.mod go.sum tools/go.mod tools/go.sum
 		git status --porcelain $^ && \
 		false; \
 	fi
-
-.PHONY: readme
-readme: README.md
-
-.PHONY: readmecheck
-readmecheck: $(STITCHMD)
-	$(eval LOG := $(shell mktemp -t readmecheck.XXXXX))
-	@$(STITCHMD) -color -d -o README.md doc/README.md > $(LOG)
-	@[ ! -s "$(LOG)" ] || \
-		(echo "README.md is out of date:" | \
-		cat - $(LOG) && false)
-
-README.md: $(wildcard doc/*) $(STITCHMD)
-	$(STITCHMD) -o README.md doc/README.md
-
-$(STITCHMD): tools/go.mod
-	cd tools && go install go.abhg.dev/stitchmd
