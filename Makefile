@@ -1,15 +1,23 @@
-BIN = bin
-GO_FILES = $(shell find . -path '*/.*' -o -path '*/testdata/*' -prune \
-	   -o '(' -type f -a -name '*.go' ')' -print)
-REQUIREDFIELD = $(BIN)/requiredfield
-
-REVIVE = $(BIN)/revive
-STATICCHECK = $(BIN)/staticcheck
-
-TOOLS = $(REVIVE) $(STATICCHECK)
+SHELL = /bin/bash
 
 PROJECT_ROOT = $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-export GOBIN = $(PROJECT_ROOT)/$(BIN)
+
+# Setting GOBIN and PATH ensures two things:
+# - All 'go install' commands we run
+#   only affect the current directory.
+# - All installed tools are available on PATH
+#   for commands like go generate.
+export GOBIN = $(PROJECT_ROOT)/bin
+export PATH := $(GOBIN):$(PATH)
+
+TEST_FLAGS ?= -v -race
+
+# Non-test Go files.
+GO_SRC_FILES = $(shell find . \
+	   -path '*/.*' -prune -o \
+	   '(' -type f -a -name '*.go' -a -not -name '*_test.go' ')' -print)
+
+REQUIREDFIELD = bin/requiredfield
 
 .PHONY: all
 all: build lint test
@@ -17,56 +25,32 @@ all: build lint test
 .PHONY: build
 build: $(REQUIREDFIELD)
 
-$(REQUIREDFIELD): $(GO_FILES)
+$(REQUIREDFIELD): $(GO_SRC_FILES)
 	go install go.abhg.dev/requiredfield/cmd/requiredfield
 
-.PHONY: tools
-tools: $(TOOLS)
+.PHONY: lint
+lint: golangci-lint tidy-lint
 
 .PHONY: test
-test: $(GO_FILES)
-	go test -v -race ./...
+test:
+	go test $(TEST_FLAGS) ./...
 
 .PHONY: cover
-cover: $(GO_FILES)
-	go test -v -race -coverprofile=cover.out -coverpkg=./... ./...
+cover:
+	go test $(TEST_FLAGS) -coverprofile=cover.out -coverpkg=./... ./...
 	go tool cover -html=cover.out -o cover.html
 
-.PHONY: lint
-lint: gofmt revive staticcheck gomodtidy requiredfield
-
-.PHONY: gofmt
-gofmt:
-	$(eval FMT_LOG := $(shell mktemp -t gofmt.XXXXX))
-	@gofmt -e -s -l $(GO_FILES) > $(FMT_LOG) || true
-	@[ ! -s "$(FMT_LOG)" ] || \
-		(echo "gofmt failed. Please reformat the following files:" | \
-		cat - $(FMT_LOG) && false)
-
-.PHONY: requiredfield
-requiredfield: $(REQUIREDFIELD)
-	go vet -vettool=$(REQUIREDFIELD) ./...
-
-.PHONY: revive
-revive: $(REVIVE)
-	$(REVIVE) -set_exit_status ./...
-
-$(REVIVE): tools/go.mod
-	go install -C tools github.com/mgechev/revive
-
-.PHONY: staticcheck
-staticcheck: $(STATICCHECK)
-	$(STATICCHECK) ./...
-
-$(STATICCHECK): tools/go.mod
-	go install -C tools honnef.co/go/tools/cmd/staticcheck
-
-.PHONY: gomodtidy
-gomodtidy: go.mod go.sum tools/go.mod tools/go.sum
+.PHONY: tidy
+tidy:
 	go mod tidy
-	go mod tidy -C tools
-	@if ! git diff --quiet $^; then \
-		echo "go mod tidy changed files:" && \
-		git status --porcelain $^ && \
-		false; \
-	fi
+
+.PHONY: golangci-lint
+golangci-lint:
+	golangci-lint run
+
+.PHONY: tidy-lint
+tidy-lint:
+	@echo "[lint] go mod tidy"
+	@go mod tidy && \
+		git diff --exit-code -- go.mod go.sum || \
+		(echo "'go mod tidy' changed files" && false)
