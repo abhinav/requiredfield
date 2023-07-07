@@ -24,3 +24,15 @@ Author ID `required:"true"`
 
 Author ID // required
 ```
+
+## Where does documentation for a field go?
+
+Place documentation for a field above it as you normally would.
+This will not affect requiredfield's behavior.
+
+```go
+type User struct {
+   // Name is the name of the user.
+   Name string // required
+}
+```
