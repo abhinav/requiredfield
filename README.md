@@ -3,6 +3,8 @@
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Usage](#usage)
+  - [From the command line](#command-line-usage)
+  - [As a golangci-lint plugin](#use-as-a-golangci-lint-plugin)
 - [Overview](#overview)
   - [Syntax](#syntax)
   - [Behavior](#behavior)
@@ -49,17 +51,53 @@ go install go.abhg.dev/requiredfield/cmd/requiredfield@latest
 
 ## Usage
 
-To use the linter, run the binary directly:
+### Command line usage
 
-```bash
-requiredfield ./...
-```
-
-Alternatively, use it with `go vet`:
+To use the linter, run the linter with `go vet`:
 
 ```bash
 go vet -vettool=$(which requiredfield) ./...
 ```
+
+### Use as a golangci-lint plugin
+
+To use requiredfield as a golangci-lint plugin,
+take the following steps:
+
+- Clone the repository or download a source archive
+  from the Releases page.
+
+  ```bash
+  git clone https://github.com/abhinav/requiredfield.git
+  ```
+
+- Build the plugin:
+
+  ```bash
+  cd requiredfield
+  go build -buildmode=plugin ./cmd/requiredfield
+  ```
+
+- Add the linter under `linters-settings.custom` in your `.golangci.yml`,
+  referring to the compiled plugin (usually called 'requiredfield.so').
+
+  ```yaml
+  linters-settings:
+    custom:
+      requiredfield:
+        path: requiredfield.so
+        description: Checks for required struct fields.
+        original-url: go.abhg.dev/requiredfield
+  ```
+
+- Run golangci-lint as usual.
+
+> **Warning**:
+>
+> For this to work, your plugin must be built for the same environment
+> as the golangci-lint binary you're using.
+>
+> See [How to add a private linter to golangci-lint](https://golangci-lint.run/contributing/new-linters/#how-to-add-a-private-linter-to-golangci-lint) for details.
 
 ## Overview
 
