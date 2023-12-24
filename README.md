@@ -311,4 +311,4 @@ without sacrificing safety.
 
 ## License
 
-This software is made available under the MIT license.
+This software is made available under the BSD3 license.
