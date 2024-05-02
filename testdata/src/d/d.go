@@ -34,11 +34,12 @@ func _() {
 }
 
 type irregularSpacing struct { // want irregularSpacing:"required<A, B, C, D, E>"
-	A int //required
+	A int // required
 	B int //  required
 	C int //     required
-	D int //required: some context
+	D int // required: some context
 	E int //   required: some context
+	F int /* required: not enforced */
 }
 
 func _() {
