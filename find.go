@@ -129,18 +129,23 @@ func (f *finder) structType(name *ast.Ident, t *ast.StructType) {
 	}
 }
 
-const _required = "// required"
+const _required = "required"
 
 func isRequiredComment(c *ast.Comment) bool {
-	if c.Text == _required {
-		return true
-	}
-
-	if !strings.HasPrefix(c.Text, _required) {
+	text, ok := strings.CutPrefix(c.Text, "//")
+	if !ok {
+		// This is a '/*' comment which we do not support.
 		return false
 	}
+	text = strings.TrimSpace(text)
 
-	for _, r := range c.Text[len(_required):] {
+	if text == _required {
+		return true
+	}
+	if !strings.HasPrefix(text, _required) {
+		return false
+	}
+	for _, r := range text[len(_required):] {
 		return !unicode.IsLetter(r) && !unicode.IsDigit(r) && r != '_'
 	}
 

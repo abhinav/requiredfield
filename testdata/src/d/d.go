@@ -32,3 +32,26 @@ type Handler struct { // want Handler:"required<Callback>"
 func _() {
 	fmt.Println(Handler{}) // want "missing required fields: Callback"
 }
+
+type irregularSpacing struct { // want irregularSpacing:"required<A, B, C, D, E>"
+	A int // required
+	B int //  required
+	C int //     required
+	D int // required: some context
+	E int //   required: some context
+	F int /* required: not enforced */
+}
+
+func _() {
+	fmt.Println(irregularSpacing{}) // want "missing required fields: A, B, C, D, E"
+}
+
+type invalidTags struct { // want invalidTags:"required<A>"
+	A int // required
+	B int // requiredsuffix
+	C int // prefixrequired
+}
+
+func _() {
+	fmt.Println(invalidTags{}) // want "missing required fields: A"
+}
