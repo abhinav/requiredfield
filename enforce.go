@@ -30,6 +30,9 @@ func (e *enforcer) Enforce(inspect *inspector.Inspector) {
 		if ptr, ok := typ.(*types.Pointer); ok {
 			typ = ptr.Elem()
 		}
+		if alias, ok := typ.(*types.Alias); ok {
+			typ = types.Unalias(alias)
+		}
 
 		var unset map[string]struct{}
 		switch typ := typ.(type) {
