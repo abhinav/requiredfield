@@ -21,3 +21,12 @@ u := User{
 // ...
 u.Name = name
 ```
+
+This behavior is not enforced if the struct is being initialized
+as part of a return statement with a (probably) non-nil error value:
+
+```go
+if err != nil {
+    return User{}, err // ok, because the error is non-nil
+}
+```
