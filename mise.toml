@@ -1,0 +1,49 @@
+[tools]
+go = "1.23"
+"aqua:golangci/golangci-lint" = "latest"
+"ubi:miniscruff/changie" = "latest"
+"ubi:abhinav/stitchmd" = "latest"
+
+[tasks.all]
+description = "Build, lint and test the code."
+depends = ["build", "lint", "test"]
+
+[tasks.build]
+run = "go build ./..."
+description = "Build the project"
+
+[tasks.lint]
+description = "Run all linters"
+depends = ["lint:*"]
+
+[tasks.test]
+description = "Run tests"
+run = "go test ./..."
+
+[tasks."test:cover"]
+description = "Run tests with coverage"
+run = ["go test -coverprofile=cover.out -coverpkg=./... ./..."]
+
+[tasks."test:cover:html"]
+description = "Run tests with coverage and generate HTML report"
+depends = ["cover"]
+run = "go tool cover -html=cover.out -o cover.html"
+
+[tasks."lint:tidy"]
+description = "Ensure go.mod is tidy"
+run = "go mod tidy -diff"
+
+[tasks."lint:golangci"]
+description = "Run golangci-lint"
+run = "golangci-lint run"
+
+[tasks."changes:new"]
+description = "Add a changelog entry"
+run = "changie new"
+
+[tasks."changes:prepare"]
+description = "Prepare the changelog for release"
+run = [
+    'changie batch {{arg(name="version")}}',
+    'changie merge',
+]
