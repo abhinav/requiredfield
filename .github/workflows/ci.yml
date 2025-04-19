@@ -21,7 +21,7 @@ jobs:
     - run: mise run lint
 
   test:
-    name: Test/ Go (${{ matrix.mise-env }})
+    name: Test (Go ${{ matrix.mise-env }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -37,6 +37,6 @@ jobs:
       with:
         cache_key_prefix: mise-v0-${{ matrix.mise-env }}
     - name: Test
-      run: mise run test:cover -race
+      run: mise run cover
     - name: Upload coverage
       uses: codecov/codecov-action@v5
