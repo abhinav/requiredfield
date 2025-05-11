@@ -1,3 +1,0 @@
-kind: Fixed
-body: Fix incorrectly reporting missing fields for unkeyed struct literals.
-time: 2025-05-11T11:20:52.55766-07:00
