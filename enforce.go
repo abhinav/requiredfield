@@ -69,7 +69,14 @@ func (e *enforcer) Enforce(inspect *inspector.Inspector) {
 		for _, elt := range lit.Elts {
 			kv, ok := elt.(*ast.KeyValueExpr)
 			if !ok {
-				continue
+				// Elements will not be KeyValueExprs
+				// only if unkeyed struct literal is used.
+				// In case of unkeyed literals,
+				// the compiler enforces that
+				// all fields are specified,
+				// so there's nothing for us to do
+				// for this struct.
+				return
 			}
 			id, ok := kv.Key.(*ast.Ident)
 			if !ok {
