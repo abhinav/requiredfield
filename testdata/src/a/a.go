@@ -67,4 +67,8 @@ func x() {
 
 	// Aliased.
 	fmt.Println(aliasedStruct{}) // want "missing required fields: A, B"
+
+	// Unkeyed struct literals.
+	fmt.Println(RequiredExported{}) // want "missing required fields: A, B"
+	fmt.Println(RequiredExported{"a", 1})
 }
