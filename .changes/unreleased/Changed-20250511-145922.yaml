@@ -1,0 +1,3 @@
+kind: Changed
+body: Don't enforce required fields if the struct is part of a return statement with a non-nil error.
+time: 2025-05-11T14:59:22.293016-07:00

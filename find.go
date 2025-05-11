@@ -16,8 +16,8 @@ type finder struct {
 	Fset *token.FileSet // required
 	Info *types.Info    // required
 
-	ExportObjectFact func(obj types.Object, fact analysis.Fact)           // required
-	Reportf          func(pos token.Pos, msg string, args ...interface{}) // required
+	ExportObjectFact func(obj types.Object, fact analysis.Fact)   // required
+	Reportf          func(pos token.Pos, msg string, args ...any) // required
 }
 
 var _finderNodeFilter = []ast.Node{
