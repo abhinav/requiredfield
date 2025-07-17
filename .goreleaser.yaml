@@ -1,0 +1,55 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+# vim: set ts=2 sw=2 tw=0 fo=cnqoj
+version: 2
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    main: ./cmd/requiredfield
+    binary: requiredfield
+    goos: [linux, windows, darwin]
+    goarch: [amd64, arm64]
+    ldflags: '-s -w'
+    ignore:
+      - goos: darwin
+        goarch: arm
+      - goos: windows
+        goarch: arm
+    flags:
+      - -trimpath
+
+archives:
+  - formats: [tar.gz]
+    # uname compatible archive name.
+    name_template: >-
+      {{- .ProjectName }}.
+      {{- title .Os }}-
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else if (and (eq .Arch "arm64") (eq .Os "linux")) }}aarch64
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+
+homebrew_casks:
+  - repository:
+      owner: abhinav
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    commit_msg_template: "{{ .ProjectName }}: Update formula to {{ .Tag }}"
+    commit_author:
+      name: Abhinav Gupta
+      email: mail@abhinavg.net
+    homepage: https://github.com/abhinav/requiredfield
+    description: "Go linter that checks for required fields in structs"
+    license: BSD-3-Clause
+    skip_upload: auto
+
+checksum:
+  name_template: 'checksums.txt'
+
+snapshot:
+  version_template: "{{ incminor .Tag }}-dev"
