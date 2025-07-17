@@ -1,0 +1,63 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release, including the 'v' prefix."
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ inputs.version || github.ref }}
+
+    - uses: jdx/mise-action@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Set version (changie)
+      if: inputs.version == ''
+      run: |
+        CHANGIE_VERSION=$(changie latest)
+        echo "VERSION=${CHANGIE_VERSION#v}" >> "$GITHUB_ENV"
+    - name: Set version (input)
+      if: inputs.version != ''
+      run:
+        echo "VERSION=${INPUT_VERSION#v}" >> "$GITHUB_ENV"
+      env:
+        INPUT_VERSION: ${{ inputs.version }}
+
+    - name: Verify version
+      run: |
+        if [[ -z "$VERSION" ]]; then
+          echo "No version set"
+          exit 1
+        fi
+
+    - name: Extract changelog
+      run: |
+        tail -n+2 .changes/v${{ env.VERSION }}.md \
+          | tee ${{ github.workspace }}-CHANGELOG.txt
+
+    - name: Release
+      uses: goreleaser/goreleaser-action@v6
+      with:
+        distribution: goreleaser
+        version: latest
+        args: release --clean --release-notes ${{ github.workspace }}-CHANGELOG.txt
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
+        GORELEASER_CURRENT_TAG: v${{ env.VERSION }}

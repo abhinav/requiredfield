@@ -1,0 +1,15 @@
+[tools."aqua:golangci/golangci-lint"]
+version = "2.2.2"
+backend = "aqua:golangci/golangci-lint"
+
+[tools.go]
+version = "1.24.5"
+backend = "core:go"
+
+[tools."ubi:abhinav/stitchmd"]
+version = "0.9.0"
+backend = "ubi:abhinav/stitchmd"
+
+[tools."ubi:miniscruff/changie"]
+version = "1.22.0"
+backend = "ubi:miniscruff/changie"
