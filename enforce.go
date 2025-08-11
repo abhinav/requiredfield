@@ -149,16 +149,8 @@ func (e *enforcer) isReturnedWithNonNilError(stack []ast.Node) bool {
 	}
 
 	// Find the nearest function's type for the return statement.
-	var ftype *ast.FuncType
-	for idx := retIdx - 1; idx >= 0; idx-- {
-		switch n := stack[idx].(type) {
-		case *ast.FuncDecl:
-			ftype = n.Type
-		case *ast.FuncLit:
-			ftype = n.Type
-		}
-	}
-	if ftype == nil {
+	ftype, ok := parentFuncType(stack[:retIdx])
+	if !ok || ftype == nil {
 		// Impossible, but we don't want to panic.
 		return false
 	}
@@ -199,4 +191,17 @@ func (e *enforcer) isReturnedWithNonNilError(stack []ast.Node) bool {
 
 	// Target is not part of the last return value.
 	return true
+}
+
+func parentFuncType(stack []ast.Node) (*ast.FuncType, bool) {
+	for idx := len(stack) - 1; idx >= 0; idx-- {
+		switch n := stack[idx].(type) {
+		case *ast.FuncDecl:
+			return n.Type, true
+		case *ast.FuncLit:
+			return n.Type, true
+		}
+	}
+
+	return nil, false
 }

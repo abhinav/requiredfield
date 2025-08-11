@@ -58,6 +58,12 @@ var functionLiteral = func() (Foo, error) {
 	}
 }
 
+func nestedFunctionLiteral() {
+	_ = func() Foo {
+		return Foo{} // want "missing required fields: Bar"
+	}
+}
+
 func errorIsNotLastReturn() (error, Foo) {
 	if rand.Int()%2 == 0 {
 		return errors.New("fail"), Foo{} // want "missing required fields: Bar"
