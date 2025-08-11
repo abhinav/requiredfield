@@ -156,11 +156,11 @@ func (e *enforcer) isReturnedWithNonNilError(stack []ast.Node) bool {
 	}
 
 	// The last return type must be an error.
-	returnTypes := ftype.Results.List
-	if len(returnTypes) == 0 {
+	if ftype.Results == nil || len(ftype.Results.List) == 0 {
 		// No return types.
 		return false
 	}
+	returnTypes := ftype.Results.List
 	lastReturnType, ok := returnTypes[len(returnTypes)-1].Type.(*ast.Ident)
 	if !ok || lastReturnType.Name != "error" {
 		// The last return type is not "error".
