@@ -1,15 +1,28 @@
 [tools."aqua:golangci/golangci-lint"]
-version = "2.2.2"
+version = "2.3.1"
 backend = "aqua:golangci/golangci-lint"
 
+[tools."aqua:golangci/golangci-lint".platforms.macos-arm64]
+checksum = "sha256:ca2b5bef12070add95ecc926c12c6301ca31619bcedde48bf63a89f3f0d2ec37"
+size = 13606054
+url = "https://github.com/golangci/golangci-lint/releases/download/v2.3.1/golangci-lint-2.3.1-darwin-arm64.tar.gz"
+
 [tools.go]
-version = "1.24.5"
+version = "1.24.6"
 backend = "core:go"
+
+[tools.go.platforms.macos-arm64]
+checksum = "sha256:4e29202c49573b953be7cc3500e1f8d9e66ddd12faa8cf0939a4951411e09a2a"
+size = 76293244
+url = "https://dl.google.com/go/go1.24.6.darwin-arm64.tar.gz"
 
 [tools."ubi:abhinav/stitchmd"]
 version = "0.9.0"
 backend = "ubi:abhinav/stitchmd"
 
 [tools."ubi:miniscruff/changie"]
-version = "1.22.0"
+version = "1.22.1"
 backend = "ubi:miniscruff/changie"
+
+[tools."ubi:miniscruff/changie".platforms.macos-arm64-changie]
+checksum = "blake3:b9d26f9ad98ed08be15d87af8db62965e693d5cdd21e46f0fa9edf2de435c5e8"
