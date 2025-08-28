@@ -47,6 +47,13 @@ homebrew_casks:
     description: "Go linter that checks for required fields in structs"
     license: BSD-3-Clause
     skip_upload: auto
+    hooks:
+      post:
+        install: |
+          if OS.mac?
+            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/requiredfield"]
+          end
+
 
 checksum:
   name_template: 'checksums.txt'
