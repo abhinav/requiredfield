@@ -1,0 +1,8 @@
+# Example configuration file
+# for requiredfield.
+
+# A URL must be specified
+net/http.Request.URL
+
+# A reader must be set
+io.LimitedReader.R

@@ -1,0 +1,5 @@
+kind: Added
+body: >-
+  Add -required flag to mark fields in third-party packages
+  as required without modifying source code.
+time: 2025-11-30T15:34:07.156827-08:00

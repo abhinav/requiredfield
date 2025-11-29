@@ -32,36 +32,45 @@ import (
 // Analyzer implements the requiredfield linter.
 //
 // See package documentation for details.
-var Analyzer = &analysis.Analyzer{
-	Name: "requiredfield",
-	Doc:  "check for required fields during struct initialization",
-	Run:  run,
-	Requires: []*analysis.Analyzer{
-		inspect.Analyzer,
-	},
-	FactTypes: []analysis.Fact{
-		new(isRequiredField),
-		new(hasRequiredFields),
-	},
+var Analyzer = new(requiredfieldLinter).Analyzer()
+
+type requiredfieldLinter struct {
+	Config requiredConfig
 }
 
-func run(pass *analysis.Pass) (interface{}, error) {
+func (l *requiredfieldLinter) Analyzer() *analysis.Analyzer {
+	a := &analysis.Analyzer{
+		Name: "requiredfield",
+		Doc:  "check for required fields during struct initialization",
+		Run:  l.run,
+		Requires: []*analysis.Analyzer{
+			inspect.Analyzer,
+		},
+		FactTypes: []analysis.Fact{
+			new(isRequiredField),
+			new(hasRequiredFields),
+		},
+	}
+	l.Config.RegisterFlags(&a.Flags)
+	return a
+}
+
+func (l *requiredfieldLinter) run(pass *analysis.Pass) (any, error) {
 	inspect := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
 
-	f := finder{
+	(&finder{
 		Fset:             pass.Fset,
 		Info:             pass.TypesInfo,
 		ExportObjectFact: pass.ExportObjectFact,
 		Reportf:          pass.Reportf,
-	}
-	f.Find(inspect)
+	}).Find(inspect)
 
-	e := enforcer{
+	(&enforcer{
 		Info:             pass.TypesInfo,
 		ImportObjectFact: pass.ImportObjectFact,
 		Reportf:          pass.Reportf,
-	}
-	e.Enforce(inspect)
+		Config:           &l.Config,
+	}).Enforce(inspect)
 
 	return nil, nil
 }

@@ -4,10 +4,15 @@
 - [Installation](#installation)
 - [Usage](#usage)
   - [From the command line](#command-line-usage)
+    - [Flags](#flags)
+      - [-required](#-required)
+      - [-config](#-config)
   - [As a golangci-lint plugin](#use-as-a-golangci-lint-plugin)
 - [Overview](#overview)
   - [Syntax](#syntax)
-  - [Behavior](#behavior)
+  - [Required fields in third-party code](#required-fields-in-third-party-code)
+  - [Configuration](#configuration)
+- [Behavior](#behavior)
 - [FAQ](#faq)
 - [Motivation](#motivation)
 - [License](#license)
@@ -53,10 +58,64 @@ go install go.abhg.dev/requiredfield/cmd/requiredfield@latest
 
 ### Command line usage
 
-To use the linter, run the linter with `go vet`:
+requiredfield can be used as a standalone tool or with `go vet`.
 
 ```bash
+# Standalone
+requiredfield ./...
+
+# With go vet
 go vet -vettool=$(which requiredfield) ./...
+```
+
+#### Flags
+
+##### `-required`
+
+Mark a field as required without modifying its source code.
+This is useful for third-party packages
+where you cannot add `// required` comments.
+
+The flag accepts a field specification in the format `package/path.Type.Field`.
+You can specify the flag multiple times to mark multiple fields as required.
+
+```bash
+# Standalone
+requiredfield -required package/path.Type.Field ./...
+
+# With go vet
+go vet -vettool=$(which requiredfield) \
+  -required package/path.Type.Field \
+  ./...
+```
+
+> [!NOTE]
+>
+> Fields marked via `-required` are merged
+> with fields marked using `// required` comments.
+
+##### `-config`
+
+Load required field specifications from a configuration file.
+See [Configuration](#configuration) for file format details.
+
+> [!NOTE]
+>
+> This flag is recommended for standalone usage only.
+>
+> If used with `go vet`, be aware that
+> a) the path must be absolute (not relative),
+> and b) the configuration file will be loaded repeatedly
+> as `go vet` invokes the linter anew for each compilation unit.
+
+```bash
+# Standalone (recommended)
+requiredfield -config ./requiredfield.rc ./...
+
+# With go vet (path must be absolute)
+go vet -vettool=$(which requiredfield) \
+  -config /absolute/path/to/requiredfield.rc \
+  ./...
 ```
 
 ### Use as a golangci-lint plugin
@@ -207,7 +266,117 @@ type Watcher struct {
 }
 ```
 
-### Behavior
+### Required fields in third-party code
+
+If you need to enforce that certain fields are always set
+for types you don't control,
+use the `-required` flag to mark them as required.
+This accepts a field specification in the format:
+
+```
+package/path.TypeName.FieldName
+```
+
+You can specify the flag multiple times.
+For example:
+
+```bash
+requiredfield \
+  -required net/http.Request.Method \
+  -required net/http.Request.URL \
+  ./...
+```
+
+This marks the `Method` and `URL` fields
+of the `net/http.Request` type as required.
+
+```go
+package http
+
+type Request struct {
+    Method string
+    URL    *url.URL
+    // ... other fields
+}
+```
+
+Any code that creates a `Request` without setting these fields will be reported:
+
+```go
+req := &http.Request{Header: make(http.Header)}
+// ERROR: missing required fields: Method, URL
+```
+
+> [!NOTE]
+>
+> Fields marked via `-required` are merged
+> with fields marked using `// required` comments.
+
+### Configuration
+
+requiredfield supports loading configuration using the `-config` flag.
+
+#### File Format
+
+The configuration file format is line-based.
+Each line should be in one of the following forms:
+
+```
+key1 value1
+# comment
+key2 value2
+```
+
+Key-value pairs are separated by whitespace.
+The supported keys are:
+
+- **required**: Marks a field as required.
+  The value must be in the format `package/path.TypeName.FieldName` --
+  same as the `-required` flag.
+
+<details>
+ <summary>Example</summary>
+
+Create a file named `requiredfield.rc` with the following content:
+
+```
+# External package fields
+required net/http.Request.Method
+required net/http.Request.URL
+
+# Internal package fields
+required github.com/example/myapp/config.Config.APIKey
+required github.com/example/myapp/config.Config.Database
+```
+
+Then run requiredfield with the `-config` flag:
+
+```bash
+requiredfield -config requiredfield.rc ./...
+```
+
+</details>
+
+Fields specified in the configuration file are merged with:
+
+- Fields marked using `// required` comments in source code
+- Fields specified via the `-required` flag
+
+#### Usage with `go vet`
+
+While the `-config` flag works with `go vet`,
+it is recommended for standalone usage only.
+
+If you do use it with `go vet`,
+be aware that the path must be absolute,
+and the configuration file will be loaded repeatedly
+as `go vet` invokes the linter for each compilation unit.
+
+Therefore, for `go vet`,
+prefer using the `-required` flag directly
+or `// required` comments in source code.
+
+## Behavior
 
 Any time a struct is initialized in the form `T{..}`,
 requiredfield will ensure that all its required fields are set explicitly.
