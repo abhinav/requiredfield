@@ -14,8 +14,9 @@ import (
 type enforcer struct {
 	Info *types.Info // required
 
-	ImportObjectFact func(obj types.Object, fact analysis.Fact) bool      // required
-	Reportf          func(pos token.Pos, msg string, args ...interface{}) // required
+	ImportObjectFact func(obj types.Object, fact analysis.Fact) bool // required
+	Reportf          func(pos token.Pos, msg string, args ...any)    // required
+	Config           *requiredConfig
 }
 
 var _enforceNodeFilter = []ast.Node{
@@ -48,15 +49,29 @@ func (e *enforcer) visit(n ast.Node, stack []ast.Node) {
 	switch typ := typ.(type) {
 	case *types.Named:
 		// named struct (probably)
+
 		var reqFields hasRequiredFields
-		if !e.ImportObjectFact(typ.Obj(), &reqFields) {
-			return
+		if e.ImportObjectFact(typ.Obj(), &reqFields) && len(reqFields.List) > 0 {
+			unset = make(map[string]struct{}, len(reqFields.List))
+			for _, name := range reqFields.List {
+				unset[name] = struct{}{}
+			}
 		}
 
-		unset = make(map[string]struct{}, len(reqFields.List))
-		for _, name := range reqFields.List {
+		// If there are any configured required fields,
+		// add them to the unset map.
+		//
+		// (Only named structs can have configured required fields.)
+		pkgPath := typ.Obj().Pkg().Path()
+		typeName := typ.Obj().Name()
+		configFields := e.Config.RequiredFields(pkgPath, typeName)
+		for _, name := range configFields {
+			if unset == nil {
+				unset = make(map[string]struct{}, len(configFields))
+			}
 			unset[name] = struct{}{}
 		}
+
 	case *types.Struct:
 		// anonymous struct
 		var fact isRequiredField

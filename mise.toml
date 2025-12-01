@@ -27,6 +27,10 @@ run = [
     "go tool cover -html=cover.out -o cover.html"
 ]
 
+[tasks.stitchmd]
+description = "Generate README from doc/README.md"
+run = "stitchmd -o README.md doc/README.md"
+
 [tasks."lint:tidy"]
 description = "Ensure go.mod is tidy"
 run = "go mod tidy -diff"
@@ -34,6 +38,16 @@ run = "go mod tidy -diff"
 [tasks."lint:golangci"]
 description = "Run golangci-lint"
 run = "golangci-lint run"
+
+[tasks."lint:stitchmd"]
+description = "Check that README is up-to-date"
+run = """
+DIFF=$(stitchmd -diff -o README.md doc/README.md)
+if [[ -n "$DIFF" ]]; then
+  echo "$DIFF"
+  exit 1
+fi
+"""
 
 [tasks."changes:new"]
 description = "Add a changelog entry"

@@ -1,0 +1,4 @@
+required external.User.ID
+required external.User.Name
+required external.Config.APIKey
+required fields_from_config.LocalType.B
