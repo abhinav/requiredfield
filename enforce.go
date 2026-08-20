@@ -106,6 +106,10 @@ func (e *enforcer) visit(n ast.Node, stack []ast.Node) {
 	}
 
 	// Check that all required fields are set.
+	structType, ok := typ.Underlying().(*types.Struct)
+	if !ok {
+		return
+	}
 	for _, elt := range lit.Elts {
 		kv, ok := elt.(*ast.KeyValueExpr)
 		if !ok {
@@ -122,7 +126,18 @@ func (e *enforcer) visit(n ast.Node, stack []ast.Node) {
 		if !ok {
 			continue
 		}
-		delete(unset, id.Name)
+
+		// Go 1.27 permits a promoted field as a struct literal key.
+		// Follow the field path so that setting the promoted field also counts
+		// as setting its enclosing top-level field.
+		fieldName := id.Name
+		if field, ok := e.Info.Uses[id].(*types.Var); ok {
+			_, index, _ := types.LookupFieldOrMethod(typ, false, field.Pkg(), id.Name)
+			if len(index) > 0 {
+				fieldName = structType.Field(index[0]).Name()
+			}
+		}
+		delete(unset, fieldName)
 	}
 
 	if len(unset) == 0 {
