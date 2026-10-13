@@ -34,34 +34,34 @@ url = "https://github.com/golangci/golangci-lint/releases/download/v2.13.1/golan
 url_api = "https://api.github.com/repos/golangci/golangci-lint/releases/assets/522396821"
 provenance = "github-attestations"
 
-[[tools.changie]]
-version = "1.25.2"
+[[tools."aqua:miniscruff/changie"]]
+version = "1.25.1"
 backend = "aqua:miniscruff/changie"
 
-[tools.changie."platforms.linux-arm64"]
-checksum = "sha256:84c3f158906da24f9a4941518dcf55a2badf9524bfb9579c78b5e7876ae675fa"
-url = "https://github.com/miniscruff/changie/releases/download/v1.25.2/changie_1.25.2_linux_arm64.tar.gz"
-url_api = "https://api.github.com/repos/miniscruff/changie/releases/assets/500977444"
+[tools."aqua:miniscruff/changie"."platforms.linux-arm64"]
+checksum = "sha256:115b255d2f5da1a1d50ffcd7853a2616d87a40487679d46f95a39c3956b9b618"
+url = "https://github.com/miniscruff/changie/releases/download/v1.25.1/changie_1.25.1_linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/miniscruff/changie/releases/assets/483293100"
 
-[tools.changie."platforms.linux-x64"]
-checksum = "sha256:7489b5a6a595e5a9f8b0d392114b10c130634639ef1190fafb2f15a5cd9058cd"
-url = "https://github.com/miniscruff/changie/releases/download/v1.25.2/changie_1.25.2_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/miniscruff/changie/releases/assets/500977432"
+[tools."aqua:miniscruff/changie"."platforms.linux-x64"]
+checksum = "sha256:90b90b459b345335ef5715e4e03c354cde99070729939cbab004ac37e5966630"
+url = "https://github.com/miniscruff/changie/releases/download/v1.25.1/changie_1.25.1_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/miniscruff/changie/releases/assets/483293086"
 
-[tools.changie."platforms.macos-arm64"]
-checksum = "sha256:03205b2ddc042458693e4e8e1d663d0bcc1cec9c519e15e92c8b81a286e0977e"
-url = "https://github.com/miniscruff/changie/releases/download/v1.25.2/changie_1.25.2_darwin_arm64.tar.gz"
-url_api = "https://api.github.com/repos/miniscruff/changie/releases/assets/500977431"
+[tools."aqua:miniscruff/changie"."platforms.macos-arm64"]
+checksum = "sha256:dc2ee4184ab6cd4153bb223dd6b631837b62ce477ae4294098a8eaf1a685243a"
+url = "https://github.com/miniscruff/changie/releases/download/v1.25.1/changie_1.25.1_darwin_arm64.tar.gz"
+url_api = "https://api.github.com/repos/miniscruff/changie/releases/assets/483293087"
 
-[tools.changie."platforms.macos-x64"]
-checksum = "sha256:729561d13d45c2cdf0daef2c6eb494bf185135747bbdf600e4e0e586683f372b"
-url = "https://github.com/miniscruff/changie/releases/download/v1.25.2/changie_1.25.2_darwin_amd64.tar.gz"
-url_api = "https://api.github.com/repos/miniscruff/changie/releases/assets/500977429"
+[tools."aqua:miniscruff/changie"."platforms.macos-x64"]
+checksum = "sha256:08bd7afb9ff1ee8c1130e46f5924e55673878d8a3e7ada722abd29e050da281f"
+url = "https://github.com/miniscruff/changie/releases/download/v1.25.1/changie_1.25.1_darwin_amd64.tar.gz"
+url_api = "https://api.github.com/repos/miniscruff/changie/releases/assets/483293109"
 
-[tools.changie."platforms.windows-x64"]
-checksum = "sha256:0c90923ac44d4964fe0ca4b610a253e89ae1a136eccf5890f47c28a7d1c9528d"
-url = "https://github.com/miniscruff/changie/releases/download/v1.25.2/changie_1.25.2_windows_amd64.zip"
-url_api = "https://api.github.com/repos/miniscruff/changie/releases/assets/500977445"
+[tools."aqua:miniscruff/changie"."platforms.windows-x64"]
+checksum = "sha256:d61212e4e54f4d4d1655db478de7d522dbdc4115fddf4b109b7aa3594cc678ca"
+url = "https://github.com/miniscruff/changie/releases/download/v1.25.1/changie_1.25.1_windows_amd64.zip"
+url_api = "https://api.github.com/repos/miniscruff/changie/releases/assets/483293103"
 
 [[tools."github:abhinav/stitchmd"]]
 version = "0.9.0"
@@ -93,59 +93,59 @@ url = "https://github.com/abhinav/stitchmd/releases/download/v0.9.0/stitchmd-win
 url_api = "https://api.github.com/repos/abhinav/stitchmd/releases/assets/174170746"
 
 [[tools.go]]
-version = "1.27.0"
+version = "1.27.2"
 backend = "core:go"
 
 [tools.go."platforms.linux-arm64"]
-checksum = "sha256:51798d2c42d0e1c6ed7fd9f48728b4193abac9e8aad6dbac2fe96a81f5909bda"
-url = "https://dl.google.com/go/go1.27.0.linux-arm64.tar.gz"
+checksum = "sha256:94f3e30b8e374bc285e7dadc11e0865726b9bc6e85b841ccceaabc0214c6b7c8"
+url = "https://dl.google.com/go/go1.27.2.linux-arm64.tar.gz"
 
 [tools.go."platforms.linux-x64"]
-checksum = "sha256:675c26c449cbb18fc24b74650de1eabbae6e16f64326fd85a283fb3b58280685"
-url = "https://dl.google.com/go/go1.27.0.linux-amd64.tar.gz"
+checksum = "sha256:ecbadb99091a3f46e31f5f934b068b1864eafa7995211b39eaddf76996045fe5"
+url = "https://dl.google.com/go/go1.27.2.linux-amd64.tar.gz"
 
 [tools.go."platforms.macos-arm64"]
-checksum = "sha256:90493b3bbd5e10f91d12153198bf1994fd756399b4fec93b49b0c6e2acdeeb3e"
-url = "https://dl.google.com/go/go1.27.0.darwin-arm64.tar.gz"
+checksum = "sha256:76812b213b1b2302c978d28fa52fa92d541704b9e7d9d5db8002c50e4018c4c5"
+url = "https://dl.google.com/go/go1.27.2.darwin-arm64.tar.gz"
 
 [tools.go."platforms.macos-x64"]
-checksum = "sha256:d3314e25496e4381d71a5c51d2907e7af655d199f6780b549f015bd85fef4986"
-url = "https://dl.google.com/go/go1.27.0.darwin-amd64.tar.gz"
+checksum = "sha256:587b59182488b23aa6e5fc25110405a3e0e5b38ed2f5b2f46ed13c32aee356fe"
+url = "https://dl.google.com/go/go1.27.2.darwin-amd64.tar.gz"
 
 [tools.go."platforms.windows-x64"]
-checksum = "sha256:f0c0a0d33ba94f4d2c5dbc887334ce678b21813504ddb3aafcb06e60a5a667c4"
-url = "https://dl.google.com/go/go1.27.0.windows-amd64.zip"
+checksum = "sha256:1314008898bd40df77af4b014f777f08873dbdfbcd3d92308728ee03304fe04f"
+url = "https://dl.google.com/go/go1.27.2.windows-amd64.zip"
 
 [[tools.golangci-lint]]
-version = "2.12.2"
+version = "2.14.0"
 backend = "aqua:golangci/golangci-lint"
 
 [tools.golangci-lint."platforms.linux-arm64"]
-checksum = "sha256:44cd40a8c76c86755375adfeea52cfd3533cb43d7bd647771e0ae065e166df3a"
-url = "https://github.com/golangci/golangci-lint/releases/download/v2.12.2/golangci-lint-2.12.2-linux-arm64.tar.gz"
-url_api = "https://api.github.com/repos/golangci/golangci-lint/releases/assets/413470996"
+checksum = "sha256:ee7ec5f3453d15ddf106fae5a4d6c71737712348a979d1fe9cd52ec7ea299bae"
+url = "https://github.com/golangci/golangci-lint/releases/download/v2.14.0/golangci-lint-2.14.0-linux-arm64.tar.gz"
+url_api = "https://api.github.com/repos/golangci/golangci-lint/releases/assets/585813674"
 provenance = "github-attestations"
 
 [tools.golangci-lint."platforms.linux-x64"]
-checksum = "sha256:8df580d2670fed8fa984aac0507099af8df275e665215f5c7a2ae3943893a553"
-url = "https://github.com/golangci/golangci-lint/releases/download/v2.12.2/golangci-lint-2.12.2-linux-amd64.tar.gz"
-url_api = "https://api.github.com/repos/golangci/golangci-lint/releases/assets/413471054"
+checksum = "sha256:ab90aeb7b066f92a33415b638a50fe5344bbb75a0d32ad30cc248d88f81032ab"
+url = "https://github.com/golangci/golangci-lint/releases/download/v2.14.0/golangci-lint-2.14.0-linux-amd64.tar.gz"
+url_api = "https://api.github.com/repos/golangci/golangci-lint/releases/assets/585813815"
 provenance = "github-attestations"
 
 [tools.golangci-lint."platforms.macos-arm64"]
-checksum = "sha256:a9c54498731b3128f79e090be6110f3e5fffccc617b08142ed244d4126c73f29"
-url = "https://github.com/golangci/golangci-lint/releases/download/v2.12.2/golangci-lint-2.12.2-darwin-arm64.tar.gz"
-url_api = "https://api.github.com/repos/golangci/golangci-lint/releases/assets/413470950"
+checksum = "sha256:5ef5f36a7147e91dc58ef9ef4d11bb7bad5ead0c76eb6c01327a73c641d1dcc3"
+url = "https://github.com/golangci/golangci-lint/releases/download/v2.14.0/golangci-lint-2.14.0-darwin-arm64.tar.gz"
+url_api = "https://api.github.com/repos/golangci/golangci-lint/releases/assets/585813591"
 provenance = "github-attestations"
 
 [tools.golangci-lint."platforms.macos-x64"]
-checksum = "sha256:f6f06d94b6241521c53d15450c5209b028270bf966f842afb11c030c79f5bc16"
-url = "https://github.com/golangci/golangci-lint/releases/download/v2.12.2/golangci-lint-2.12.2-darwin-amd64.tar.gz"
-url_api = "https://api.github.com/repos/golangci/golangci-lint/releases/assets/413470980"
+checksum = "sha256:a5667c1c3536be1740133213e1e822bfb8f0d98ea12903174d6d5f635e4ed68d"
+url = "https://github.com/golangci/golangci-lint/releases/download/v2.14.0/golangci-lint-2.14.0-darwin-amd64.tar.gz"
+url_api = "https://api.github.com/repos/golangci/golangci-lint/releases/assets/585813755"
 provenance = "github-attestations"
 
 [tools.golangci-lint."platforms.windows-x64"]
-checksum = "sha256:bd42e3ebc8cb4ececb86941983baaf1dc221bbb04d838e94ce63b49cc91e02bb"
-url = "https://github.com/golangci/golangci-lint/releases/download/v2.12.2/golangci-lint-2.12.2-windows-amd64.zip"
-url_api = "https://api.github.com/repos/golangci/golangci-lint/releases/assets/413471017"
+checksum = "sha256:b15f903d1649283a2ab6e8d2f0c317eaf1f9f6b3763950e7e8b7e72a43dd724f"
+url = "https://github.com/golangci/golangci-lint/releases/download/v2.14.0/golangci-lint-2.14.0-windows-amd64.zip"
+url_api = "https://api.github.com/repos/golangci/golangci-lint/releases/assets/585813793"
 provenance = "github-attestations"
