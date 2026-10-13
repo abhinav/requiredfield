@@ -1,7 +1,7 @@
 [tools]
 go = "latest"
 golangci-lint = "latest"
-changie = "latest"
+"aqua:miniscruff/changie" = "latest"
 "github:abhinav/stitchmd" = "latest"
 
 [tasks.all]
@@ -55,7 +55,10 @@ run = "changie new"
 
 [tasks."changes:prepare"]
 description = "Prepare the changelog for release"
+usage = '''
+arg "<version>" help="Version to prepare"
+'''
 run = [
-    'changie batch {{arg(name="version")}}',
+    'changie batch {{usage.version}}',
     'changie merge',
 ]
