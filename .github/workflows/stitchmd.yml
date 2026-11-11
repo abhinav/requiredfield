@@ -15,15 +15,15 @@ jobs:
       contents: write
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
     - name: Check or update README
-      uses: abhinav/stitchmd-action@v1
+      uses: abhinav/stitchmd-action@fea871cb92ec395350cd06a5e07fe3b43de1d7b4 # v1
       with:
         mode: ${{ github.event_name == 'pull_request' && 'write' || 'check' }}
         summary: doc/README.md
         output: README.md
 
-    - uses: stefanzweifel/git-auto-commit-action@v5
+    - uses: stefanzweifel/git-auto-commit-action@b863ae1933cb653a53c021fe36dbb774e1fb9403 # v5
       if: ${{ github.event_name == 'pull_request' }}
       with:
         file_pattern: README.md
